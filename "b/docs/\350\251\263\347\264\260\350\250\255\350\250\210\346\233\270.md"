@@ -1,0 +1,50 @@
+# 詳細設計書
+
+このドキュメントでは、リバーシゲームの各モジュールおよび主要な関数の詳細設計を説明します。
+
+## モジュール構成
+- `reversi.py`
+  - `init_board()` : 初期盤面を生成する。
+  - `inside(x, y)` : 座標が盤面内か判定する。
+  - `opponent(player)` : プレイヤーの色を反転して返す。
+  - `valid_moves(board, player)` : 指定プレイヤーの合法手と取れる石を列挙する。
+  - `apply_move(board, x, y, player, captured)` : 盤面に手を適用し、石をひっくり返す。
+  - `draw_board(screen, board, current_player, message=None)` : 盤面とメッセージを描画する。
+  - `ai_move(board, player)` : AI の手を選択する（現状は最も多く石を取れる手）。
+  - `game_loop()` : ゲーム全体のループを管理する。
+
+## データ構造
+盤面は `List[List[int]]` で管理し、以下の値を持ちます。
+- `1` : 黒石
+- `-1` : 白石
+- `0` : 空きマス
+
+```mermaid
+graph TD
+    サンプル盤面["[[0,0,0...]]"] --> init_board
+    init_board --> game_loop
+    game_loop -->|関数呼び出し| valid_moves
+    game_loop -->|関数呼び出し| ai_move
+    ai_move --> valid_moves
+    game_loop --> apply_move
+    apply_move --> draw_board
+```
+
+## AI アルゴリズム
+AI は合法手の中から、ひっくり返せる石の数が最も多い手を選択します。
+以下はアルゴリズムのシーケンス図です。
+
+```mermaid
+sequenceDiagram
+    participant G as ゲームループ
+    participant A as AI
+    G->>A: 合法手一覧を渡す
+    A->>A: 各手の評価
+    A->>G: 最善手を返す
+    G->>盤面: apply_move で更新
+```
+
+## 画面レイアウト
+盤面は 8x8 マスで、1 マスあたり 60px の正方形です。盤面外には 20px の余白を設けています。
+
+以上が本ゲームの詳細設計となります。
